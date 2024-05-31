@@ -1,0 +1,25 @@
+{
+    "name": "insta-lr",
+    "version": "0.0.1",
+    "description": "Explore albums fetching from Adobe Lightroom shared albums, view EXIF data, and display photo locations on Google Maps",
+    "scripts": {
+        "build": "next build",
+        "dev": "next dev --port 3001",
+        "lint": "eslint --max-warnings 0 .",
+        "lint-fix": "eslint --fix ."
+    },
+    "dependencies": {
+        "@googlemaps/markerclusterer": "^2.5.3",
+        "@qolt/app-components": "*",
+        "@qolt/app-contentlayer": "*",
+        "@qolt/data-lightroom": "*",
+        "@vis.gl/react-google-maps": "^1.0.2",
+        "geolib": "^3.3.4",
+        "jsdom": "^24.1.0"
+    },
+    "devDependencies": {
+        "@types/google.maps": "^3.55.9",
+        "@types/jsdom": "^21.1.7",
+        "config-tsconfig": "*"
+    }
+}

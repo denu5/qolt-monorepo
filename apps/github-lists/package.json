@@ -1,0 +1,18 @@
+{
+    "name": "github-lists",
+    "version": "0.0.1",
+    "scripts": {
+        "build": "next build",
+        "dev": "next dev --port 3002",
+        "lint": "eslint --max-warnings 0 .",
+        "lint-fix": "eslint --fix ."
+    },
+    "dependencies": {
+        "@qolt/app-components": "*",
+        "@qolt/app-contentlayer": "*",
+        "@qolt/data-github": "*"
+    },
+    "devDependencies": {
+        "config-tsconfig": "*"
+    }
+}

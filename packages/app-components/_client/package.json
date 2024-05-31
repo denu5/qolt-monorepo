@@ -1,0 +1,8 @@
+{
+    "name": "@qolt/app-components/_client",
+    "type": "module",
+    "main": "../dist/_client/index.cjs",
+    "module": "../dist/_client/index.js",
+    "types": "../dist/_client/index.d.ts",
+    "sideEffects": false
+}

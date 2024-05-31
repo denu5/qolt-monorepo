@@ -1,0 +1,18 @@
+{
+    "extends": "config-tsconfig/tsconfig.nextjs.json",
+    "compilerOptions": {
+        "baseUrl": "src",
+        "paths": {
+            ".": ["."],
+            "contentlayer/generated": ["../.contentlayer/generated"]
+        },
+        "plugins": [
+            {
+                "name": "next"
+            }
+        ]
+    },
+    // Files and folders starting with a . are ignored by the glob patterns
+    "include": [".", ".eslintrc.js", ".next/types/**/*.ts", ".contentlayer/generated"],
+    "exclude": ["node_modules"]
+}

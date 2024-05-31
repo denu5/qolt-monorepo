@@ -1,0 +1,23 @@
+{
+    "name": "@qolt/data-lightroom",
+    "version": "0.0.1",
+    "main": "./dist/index.js",
+    "files": [
+        "dist",
+        "README.md"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "dev": "npm run build -- --watch",
+        "lint": "eslint --max-warnings 0 .",
+        "lint-fix": "eslint --fix .",
+        "tsc": "tsc -p tsconfig.json",
+        "test": "jest --verbose",
+        "test-watch": "jest --verbose --watch",
+        "test-coverage": "jest --coverage --verbose"
+    },
+    "devDependencies": {
+        "config-tsconfig": "*",
+        "@types/node": "latest"
+    }
+}

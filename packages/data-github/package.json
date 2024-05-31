@@ -1,0 +1,22 @@
+{
+    "name": "@qolt/data-github",
+    "version": "0.0.1",
+    "main": "./dist/index.js",
+    "files": [
+        "dist",
+        "README.md"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "dev": "npm run build -- --watch",
+        "lint": "eslint --max-warnings 0 .",
+        "lint-fix": "eslint --fix .",
+        "tsc": "tsc -p tsconfig.json"
+    },
+    "dependencies": {
+        "cheerio": "1.0.0-rc.12"
+    },
+    "devDependencies": {
+        "config-tsconfig": "*"
+    }
+}

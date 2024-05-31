@@ -1,0 +1,12 @@
+{
+    "name": "@qolt/app-contentlayer",
+    "version": "0.0.1",
+    "main": "./src/index.ts",
+    "scripts": {
+        "lint": "eslint --max-warnings 0 .",
+        "lint-fix": "eslint --fix ."
+    },
+    "devDependencies": {
+        "config-tsconfig": "*"
+    }
+}

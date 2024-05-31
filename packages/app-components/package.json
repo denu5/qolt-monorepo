@@ -1,0 +1,33 @@
+{
+    "name": "@qolt/app-components",
+    "version": "0.0.1",
+    "type": "module",
+    "main": "dist/index.cjs",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "require": "./dist/index.cjs",
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./_client": {
+            "require": "./dist/_client/index.cjs",
+            "import": "./dist/_client/index.js",
+            "types": "./dist/_client/index.d.ts"
+        }
+    },
+    "scripts": {
+        "build": "tsup",
+        "dev": "npm run build -- --watch",
+        "lint": "eslint --max-warnings 0 .",
+        "lint-fix": "eslint --fix .",
+        "tsc": "tsc -p tsconfig.json"
+    },
+    "devDependencies": {
+        "config-tsconfig": "*"
+    },
+    "dependencies": {
+        "react-resizable-panels": "^2.0.19"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "extends": "config-tsconfig/tsconfig.base.json",
+    "compilerOptions": {
+        "baseUrl": "src",
+        "types": ["node"],
+        "paths": {
+            ".": ["."]
+        }
+    },
+    "include": [".", ".eslintrc.cjs"],
+    "exclude": ["node_modules", ".next", ".turbo", "coverage", "dist", "compiled", "build-next-static"]
+}
