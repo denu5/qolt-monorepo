@@ -1,5 +1,6 @@
 {
     "name": "github-lists",
+    "description": "⭐ GitHub List Bookmarks • Manage and display lists of GitHub repos using MDX files and GitHub Stars/Lists for repo data with the GitHub API.",
     "version": "0.0.1",
     "scripts": {
         "build": "next build",

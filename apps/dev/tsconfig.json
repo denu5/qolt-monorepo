@@ -13,6 +13,6 @@
         ]
     },
     // Files and folders starting with a . are ignored by the glob patterns
-    "include": [".", ".eslintrc.js", ".next/types/**/*.ts", ".contentlayer/generated"],
+    "include": [".", ".eslintrc.js", ".next/types/**/*.ts", ".contentlayer/generated",],
     "exclude": ["node_modules"]
 }

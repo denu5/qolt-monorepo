@@ -1,7 +1,7 @@
 {
     "name": "insta-lr",
     "version": "0.0.1",
-    "description": "Explore albums fetching from Adobe Lightroom shared albums, view EXIF data, and display photo locations on Google Maps",
+    "description": "📷 Instagram Clone x Adobe Lightroom Albums • Manage and display photo albums via MDX files and Adode Lightroom Album-Sharing as API",
     "scripts": {
         "build": "next build",
         "dev": "next dev --port 3001",

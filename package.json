@@ -15,7 +15,8 @@
         "clean": "npm exec --workspaces -- shx rm -rf .next .turbo .contentlayer dist compiled build-next-static",
         "clean-reset": "npm run clean && npm exec --workspaces -- shx rm -rf node_modules && shx rm -rf node_modules",
         "check-updates": "npm exec --workspaces -- npx npm-check-updates -u && npx npm-check-updates -u",
-        "turbo": "turbo"
+        "turbo": "turbo",
+        "postinstall": "node dump-monorepo-info.js /apps/dev/monorepo-npms.json"
     },
     "dependencies": {
         "@emotion/react": "11.11.4",
@@ -37,14 +38,14 @@
         "react-dom": "18.3.1"
     },
     "devDependencies": {
-        "@types/node": "20.13.0",
+        "@types/node": "20.14.0",
         "@types/nprogress": "0.2.3",
         "@types/react": "18.3.3",
         "@types/react-dom": "18.3.0",
-        "prettier": "3.2.5",
+        "prettier": "3.3.0",
         "shx": "0.3.4",
         "ts-node": "10.9.2",
-        "tsup": "8.0.2",
+        "tsup": "8.1.0",
         "turbo": "1.13.3",
         "typescript": "5.4.5"
     },

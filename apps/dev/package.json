@@ -1,5 +1,6 @@
 {
-    "name": "docs",
+    "name": "dev",
+    "description": "👷 Dev-Playground • Experiments using @mui/joy, next.js app-router stuff, React RSC... you name it.",
     "version": "0.0.1",
     "scripts": {
         "build": "next build",
@@ -11,7 +12,6 @@
         "prism-react-renderer": "^2.3.1"
     },
     "devDependencies": {
-        "@types/glob": "^8.1.0",
         "config-tsconfig": "*"
     }
 }
