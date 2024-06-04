@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { Box, Typography, Link as MuiLink, List, ListItem, ListItemContent, ListItemDecorator } from '@mui/joy';
-import { LinktreeLinkEntry } from './types';
+import * as React from 'react'
+import { Box, Typography, Link as MuiLink, List, ListItem, ListItemContent, ListItemDecorator } from '@mui/joy'
+import { LinktreeLinkEntry } from './types'
 
 interface LinkCardProps {
-    link: LinktreeLinkEntry;
-    hideThumbnail?: boolean;
+    link: LinktreeLinkEntry
+    hideThumbnail?: boolean
 }
 
 export const LinkEntry: React.FC<LinkCardProps> = ({ link, hideThumbnail }) => {
@@ -15,7 +15,7 @@ export const LinkEntry: React.FC<LinkCardProps> = ({ link, hideThumbnail }) => {
                     {link.title}
                 </Typography>
             </ListItem>
-        );
+        )
     }
 
     return (
@@ -35,5 +35,5 @@ export const LinkEntry: React.FC<LinkCardProps> = ({ link, hideThumbnail }) => {
                 </MuiLink>
             </ListItemContent>
         </ListItem>
-    );
-};
+    )
+}

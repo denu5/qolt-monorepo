@@ -5,8 +5,10 @@
 This project uses npm workspaces and Turborepo to manage its packages and dependencies efficiently. Below is an overview of the main applications in this project and their dependencies.
 
 ### Root Directory
+
 The root directory includes:
-- **package.json**: Configures npm workspaces and sets up project-wide dependencies.
+
+-   **package.json**: Configures npm workspaces and sets up project-wide dependencies.
 
 ```json
 {
@@ -19,20 +21,23 @@ The root directory includes:
 ```
 
 ### Apps Directory
+
 The `apps` directory contains the main applications:
-- **dev**: The dev&experiment application
-- **insta-lr**: The Instagram clone application
-- **github-lists**: The GitHub repository list application
-...
+
+-   **dev**: The dev&experiment application
+-   **insta-lr**: The Instagram clone application
+-   **github-lists**: The GitHub repository list application
+    ...
 
 ### Packages Directory
-The `packages` directory contains several packages used by the apps:
-- **@qolt/app-components**: Shared components across the applications.
-- **@qolt/app-contentlayer**: Handles content layers for the applications.
-- **@qolt/data-lightroom**: Integrates Adobe Lightroom data.
-- **@qolt/data-github**: Integrates GitHub data.
-...
 
+The `packages` directory contains several packages used by the apps:
+
+-   **@qolt/app-components**: Shared components across the applications.
+-   **@qolt/app-contentlayer**: Handles content layers for the applications.
+-   **@qolt/data-lightroom**: Integrates Adobe Lightroom data.
+-   **@qolt/data-github**: Integrates GitHub data.
+    ...
 
 ## Monorepo Management
 
@@ -83,9 +88,7 @@ project-root/
 └── README.md
 ```
 
-
 # Apps Showcase
-
 
 ## INSTA-LR
 
@@ -94,12 +97,13 @@ project-root/
 Manage and display photo albums via MDX files and Adobe Lightroom Album-Sharing as API.
 
 **Dependencies:**
-- `@googlemaps/markerclusterer`: ^2.5.3
-- `@qolt/app-components`: *
-- `@qolt/app-contentlayer`: *
-- `@qolt/data-lightroom`: *
-- `@vis.gl/react-google-maps`: ^1.0.2
-- `geolib`: ^3.3.4
+
+-   `@googlemaps/markerclusterer`: ^2.5.3
+-   `@qolt/app-components`: \*
+-   `@qolt/app-contentlayer`: \*
+-   `@qolt/data-lightroom`: \*
+-   `@vis.gl/react-google-maps`: ^1.0.2
+-   `geolib`: ^3.3.4
 
 For more details, refer to the [INSTA-LR README](/apps/insta-lr/README.md).
 
@@ -112,8 +116,9 @@ For more details, refer to the [INSTA-LR README](/apps/insta-lr/README.md).
 Manage and display lists of GitHub repos using MDX files and GitHub Stars/Lists for repo data with the GitHub API.
 
 **Dependencies:**
-- `@qolt/app-components`: *
-- `@qolt/app-contentlayer`: *
-- `@qolt/data-github`: *
+
+-   `@qolt/app-components`: \*
+-   `@qolt/app-contentlayer`: \*
+-   `@qolt/data-github`: \*
 
 For more details, refer to the [GITHUB-LISTS README](/apps/github-lists/README.md).

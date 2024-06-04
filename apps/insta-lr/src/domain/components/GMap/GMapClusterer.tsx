@@ -4,8 +4,10 @@ import MyLocationIcon from '@mui/icons-material/MyLocationRounded'
 import { AdvancedMarker, useMap } from '@vis.gl/react-google-maps'
 import { useEffect, useRef, useState } from 'react'
 
-type Point = google.maps.LatLngLiteral & { key: string; name: string }
-type Props = { points: Point[] }
+type Point = google.maps.LatLngLiteral & { key: string; name: string; data?: unknown }
+export type MarkerPoints = Point[]
+
+type Props = { points: MarkerPoints }
 
 export function GMapClusterer({ points }: Props) {
     const map = useMap()
