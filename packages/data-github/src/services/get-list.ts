@@ -1,13 +1,14 @@
 import { load } from 'cheerio'
 
 const githubUser = process.env.GITHUB_USER
-if (!githubUser) {
-    throw new Error('GITHUB_USER environment variable is not defined.')
-}
 
 export const GITHUB_LISTS_URL = `https://github.com/stars/${githubUser}/lists`
 
 async function fetchListPage(listName: string, page: number): Promise<string[]> {
+    if (!githubUser) {
+        throw new Error('GITHUB_USER environment variable is not defined.')
+    }
+    
     const response = await fetch(`${GITHUB_LISTS_URL}/${listName}?page=${String(page)}`)
 
     if (!response.ok) {

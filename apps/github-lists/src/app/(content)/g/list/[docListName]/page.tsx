@@ -39,7 +39,7 @@ export default async function GhListPage({ params: { docListName } }: PageProps)
                     </Button>
                 </Stack>
             </DrawerLayout.TopRail>
-        
+
             {/* <Typography>{doc.desc}</Typography>
             <Mdx code={doc.body.code} /> */}
             <List
