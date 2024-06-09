@@ -1,17 +1,19 @@
 import { ListItem, ListItemContent } from '@mui/joy'
-import { Sidebar } from '@qolt/app-components'
-import { SidebarList, SidebarHeader, SidebarListButton } from '@qolt/app-components/_client'
+import { DrawerLayout } from '@qolt/app-components'
+import { Sidebar, SidebarList, SidebarListButton } from '@qolt/app-components/_client'
 import { getDocBySlug } from '@qolt/app-contentlayer'
 
 import { allPages, allAlbums } from 'contentlayer/generated'
 
-export default function DrawerLayout({ children }: React.PropsWithChildren) {
+export default function Layout({ children }: React.PropsWithChildren) {
     const doc = getDocBySlug(allPages, 'albums')
 
     return (
         <>
             <Sidebar>
-                <SidebarHeader title={doc.title} />
+                <DrawerLayout.TopRail>
+                    <DrawerLayout.TopRailTitle title={doc.title} />
+                </DrawerLayout.TopRail>
                 <SidebarList>
                     {allAlbums.map((album) => (
                         <ListItem key={album.slug}>

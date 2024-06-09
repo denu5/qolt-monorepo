@@ -11,7 +11,7 @@ type ThemeConfigRegistryProps = {
     themeOptions?: CssVarsThemeOptions
 }
 
-export function ThemeConfigRegistry({ children, themeOptions }: ThemeConfigRegistryProps) {
+export function ThemeConfigRegistry({ children, themeOptions }: React.PropsWithChildren<ThemeConfigRegistryProps>) {
     const theme = extendTheme(themeOptions ?? {})
 
     return (

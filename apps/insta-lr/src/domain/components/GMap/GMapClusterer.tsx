@@ -7,9 +7,9 @@ import { useEffect, useRef, useState } from 'react'
 type Point = google.maps.LatLngLiteral & { key: string; name: string; data?: unknown }
 export type MarkerPoints = Point[]
 
-type Props = { points: MarkerPoints }
+type Props = { points: MarkerPoints; onMarkerClick?: (point: MarkerPoints[0]) => void }
 
-export function GMapClusterer({ points }: Props) {
+export function GMapClusterer({ points, onMarkerClick }: Props) {
     const map = useMap()
     const [markers, setMarkers] = useState<Record<string, Marker>>({})
     const clusterer = useRef<MarkerClusterer | null>(null)
@@ -53,7 +53,7 @@ export function GMapClusterer({ points }: Props) {
                     position={point}
                     key={point.key}
                     title={point.name}
-                    onClick={() => alert('marker was clicked!')}
+                    onClick={() => onMarkerClick?.(point)}
                     ref={(marker) => setMarkerRef(marker, point.key)}
                 >
                     <MyLocationIcon htmlColor="red" />

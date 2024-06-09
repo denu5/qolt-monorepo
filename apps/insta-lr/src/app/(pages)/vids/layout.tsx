@@ -1,6 +1,5 @@
 import { ListItem, ListItemContent, Stack } from '@mui/joy'
-import { Sidebar } from '@qolt/app-components'
-import { SidebarList, SidebarHeader, SidebarListButton } from '@qolt/app-components/_client'
+import { Sidebar, SidebarList, SidebarListButton, SidebarHeader } from '@qolt/app-components/_client'
 
 import { allVids } from 'contentlayer/generated'
 

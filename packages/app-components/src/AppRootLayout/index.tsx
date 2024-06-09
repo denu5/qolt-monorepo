@@ -1,4 +1,4 @@
-import { Box } from '@mui/joy'
+import { Box, GlobalStyles } from '@mui/joy'
 
 export * from './LeftRail'
 export * from './LeftRailLink'
@@ -18,6 +18,13 @@ export function Children({ children }: React.PropsWithChildren) {
                 minHeight: '100dvh',
             }}
         >
+            <GlobalStyles
+                styles={{
+                    ':root': {
+                        '--LeftRail-width': '64px',
+                    },
+                }}
+            />
             {children}
         </Box>
     )

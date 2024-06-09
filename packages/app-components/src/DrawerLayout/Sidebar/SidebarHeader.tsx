@@ -1,11 +1,5 @@
-import { Stack, Typography } from '@mui/joy'
+import { TopRail } from 'DrawerLayout'
 
-export function SidebarHeader({ title }: React.PropsWithChildren<{ title: string }>) {
-    return (
-        <Stack className="Sidebar__Header" justifyContent="center" sx={{ px: 1, height: '48px' }}>
-            <Typography level="h1" lineHeight={1} fontSize="20px">
-                {title}
-            </Typography>
-        </Stack>
-    )
+export function SidebarHeader({ title }: { title: string }) {
+    return <TopRail title={title} />
 }

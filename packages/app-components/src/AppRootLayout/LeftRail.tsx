@@ -1,4 +1,4 @@
-import { GlobalStyles, Sheet } from '@mui/joy'
+import { Sheet } from '@mui/joy'
 
 export function LeftRail({ children }: React.PropsWithChildren) {
     return (
@@ -23,13 +23,6 @@ export function LeftRail({ children }: React.PropsWithChildren) {
                 backgroundColor: 'rgba(var(--joy-palette-neutral-lightChannel) / 0.50)',
             }}
         >
-            <GlobalStyles
-                styles={{
-                    ':root': {
-                        '--LeftRail-width': '64px',
-                    },
-                }}
-            />
             {children}
         </Sheet>
     )

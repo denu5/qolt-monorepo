@@ -12,6 +12,7 @@ export function SidebarList({ children }: React.PropsWithChildren) {
                 size="sm"
                 sx={{
                     gap: 1,
+                    px: 1,
                     '--ListItem-radius': (theme) => theme.vars.radius.sm,
                 }}
             >

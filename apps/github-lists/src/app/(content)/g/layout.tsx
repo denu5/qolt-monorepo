@@ -1,6 +1,5 @@
-import { ListItem, ListItemContent, Stack, Typography } from '@mui/joy'
-import { Sidebar } from '@qolt/app-components'
-import { SidebarList, SidebarListButton, SidebarHeader } from '@qolt/app-components/_client'
+import { ListItem, ListItemContent, Typography } from '@mui/joy'
+import { SidebarList, SidebarListButton, SidebarHeader, Sidebar } from '@qolt/app-components/_client'
 import { getDocBySlug } from '@qolt/app-contentlayer'
 
 import { allGithubLists, allPages } from 'contentlayer/generated'
@@ -12,20 +11,7 @@ export default function DrawerLayout({ children }: React.PropsWithChildren) {
     return (
         <>
             <Sidebar>
-                <Stack
-                    sx={{
-                        position: 'sticky',
-                        top: 0,
-                        backgroundColor: 'var(--joy-palette-background-backdrop)',
-                        WebkitTapHighlightColor: 'transparent',
-                        backdropFilter: 'blur(8px)',
-                        borderBottom: '1px solid',
-                        borderColor: 'divider',
-                        zIndex: 1100,
-                    }}
-                >
-                    <SidebarHeader title={doc.title} />
-                </Stack>
+                <SidebarHeader title={doc.title} />
                 <SidebarList>
                     {allGithubLists.map((item) => (
                         <ListItem key={item.slug}>
