@@ -16,8 +16,8 @@ export default function AppCards({ apps }: { apps: AppType[] }) {
                 <Card key={app.name} size="lg" variant="outlined">
                     <Typography level="title-lg">{app.name.toUpperCase()}</Typography>
                     <Divider inset="none" />
-                    <Typography level="title-md">{app.description.split('•')[0]}</Typography>
-                    <Typography>{app.description.split('•')[1]}</Typography>
+                    <Typography level="title-md">{app.description?.split('•')[0]}</Typography>
+                    <Typography>{app.description?.split('•')[1]}</Typography>
                     <List
                         variant="outlined"
                         size="sm"

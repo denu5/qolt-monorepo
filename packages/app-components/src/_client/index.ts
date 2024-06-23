@@ -8,6 +8,4 @@ export * from '../DrawerLayout/Sidebar'
 export * from '../ColorSchemeToggleButton'
 export * from '../NLink'
 
-export * from '../hooks/useJoyScheme'
-
-export * from '../ResizeHandle'
+export * from '../ext'
