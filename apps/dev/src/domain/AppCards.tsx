@@ -31,9 +31,11 @@ export default function AppCards({ apps }: { apps: AppType[] }) {
                     </List>
                     <CardActions>
                         <Button
+                            component="a"
+                            href={app.__metaData.devUrl}
+                            target="_blank"
                             variant="soft"
                             color="neutral"
-                            href={app.__metaData.devUrl}
                             endDecorator={<KeyboardArrowRight />}
                         >
                             {app.__metaData.devUrl.split('//')[1]}

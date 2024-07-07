@@ -7,7 +7,7 @@ const cfg = {
     treeshake: false,
     dts: true,
     format: ['esm', 'cjs'],
-    external: ['react', 'react-dom', /^@mui/, /^@emotion/, /^next/, 'next-contentlayer/hooks'],
+    external: ['react', 'react-dom', /^@mui/, /^@emotion/, /^next/, 'next-contentlayer/hooks', '@next/third-parties'],
     tsconfig: 'tsconfig.prod.json',
 }
 
