@@ -13,7 +13,8 @@
         "@qolt/app-contentlayer": "*",
         "@qolt/data-github": "*",
         "mdx-mermaid": "^2.0.0",
-        "mermaid": "^10.9.1"
+        "mermaid": "^10.9.1",
+        "mongodb": "^6.8.0"
     },
     "devDependencies": {
         "config-tsconfig": "*"

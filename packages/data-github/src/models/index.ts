@@ -1,3 +1,5 @@
+import { GitHubLanguage } from '../constants'
+
 export type GitHubRepoResponse = {
     id: number
     node_id: string
@@ -56,7 +58,7 @@ export type GitHubRepoResponse = {
     size: number
     stargazers_count: number
     watchers_count: number
-    language: string
+    language: GitHubLanguage
     has_issues: boolean
     has_projects: boolean
     has_downloads: boolean

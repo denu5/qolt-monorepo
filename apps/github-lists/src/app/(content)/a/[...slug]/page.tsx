@@ -16,7 +16,6 @@ export function generateMetadata({ params }: PageProps) {
 
 const defaultComponents = {
     ProjectTree: ({ ...props }) => <ProjectTree {...props} inputMode="treePlusMinus" renderMode="treeUnix" />,
-    
 }
 
 export default function Page({ params }: PageProps) {
