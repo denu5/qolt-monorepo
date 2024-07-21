@@ -49,8 +49,7 @@ export default makeSource({
     contentDirPath: 'content',
     documentTypes: [Page, Article, GithubList],
     mdx: {
-        remarkPlugins: [[mdxMermaid, {output: 'svg'}]],
-
-    }
+        remarkPlugins: [[mdxMermaid, { output: 'svg' }]],
+    },
 })
 
