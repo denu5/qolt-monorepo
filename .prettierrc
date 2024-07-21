@@ -4,5 +4,5 @@
     "trailingComma": "all",
     "tabWidth": 4,
     "semi": false,
-    "endOfLine": "auto"
+    "endOfLine": "lf"
 }
