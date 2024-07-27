@@ -1,4 +1,4 @@
-import { GitHubLanguage } from '@qolt/data-github'
+import { GhRepoResponse } from '@qolt/data-github'
 
 export enum RepoSource {
     GitHub = 'github',
@@ -19,6 +19,6 @@ export interface RepoMetadata {
     source: RepoSource
     atomicType: AtomicType
     tags: string[]
-    language?: GitHubLanguage // Optional field for the primary language of the repo, see github api
-    languages?: Partial<Record<GitHubLanguage, number>> // Object containing language names and byte counts
+    language?: GhRepoResponse['language'] // Optional field for the primary language of the repo, see github api
+    languages?: Partial<Record<GhRepoResponse['language'], number>> // Object containing language names and byte counts
 }

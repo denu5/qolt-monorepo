@@ -52,4 +52,3 @@ export default makeSource({
         remarkPlugins: [[mdxMermaid, { output: 'svg' }]],
     },
 })
-

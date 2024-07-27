@@ -3,7 +3,7 @@ import { Button, List, ListItem, Stack, Typography } from '@mui/joy'
 import { DrawerLayout } from '@qolt/app-components'
 import { Mdx } from '@qolt/app-components/_client'
 import { getContentMetaData, getDocBySlug } from '@qolt/app-contentlayer'
-import { getGithubList, GITHUB_LISTS_URL } from '@qolt/data-github'
+import { getGithubList, getGithubListsHtmlUrl } from '@qolt/data-github'
 import { Suspense } from 'react'
 
 import { allGithubLists } from 'contentlayer/generated'
@@ -28,7 +28,7 @@ export default async function GhListPage({ params: { docListName } }: PageProps)
                     <Button
                         size="sm"
                         component="a"
-                        href={`${GITHUB_LISTS_URL}/${doc.ghListName}`}
+                        href={getGithubListsHtmlUrl(doc.ghListName)}
                         target="_blank"
                         title="View list on github"
                         color="neutral"
@@ -51,7 +51,7 @@ export default async function GhListPage({ params: { docListName } }: PageProps)
                 }}
             >
                 {items.toReversed().map((item) => (
-                    <ListItem key={item} sx={{ maxWidth: 640, width: '100%', p: 0 }}>
+                    <ListItem key={item} sx={{ maxWidth: 720, width: '100%', p: 0 }}>
                         <Suspense>
                             <GhRepoCard$ id={item} />
                         </Suspense>

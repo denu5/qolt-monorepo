@@ -1,10 +1,10 @@
 import { Link, Card, CardContent, CardOverflow, Divider, Typography } from '@mui/joy'
 import { DateTimeAgo } from '@qolt/app-components/_client'
-import { getGithubRepo, getGithubUrls } from '@qolt/data-github'
+import { getGithubRepo, getGhRepoBase } from '@qolt/data-github'
 
 export async function GhRepoCard$({ id }: { id: string }) {
     try {
-        const repo = await getGithubRepo(getGithubUrls(id).apiUrl)
+        const repo = await getGithubRepo(getGhRepoBase(id))
         return (
             <Card sx={{ width: '100%' }}>
                 <CardContent>

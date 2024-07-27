@@ -1,3 +1,2 @@
-export * from './get-list'
-export * from './get-repo'
-export * from './get-repo-languages'
+export * from './github-stars-list'
+export * from './github-rest-api'

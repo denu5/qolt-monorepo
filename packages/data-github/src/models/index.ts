@@ -1,12 +1,21 @@
-import { GitHubLanguage } from '../constants'
+import { GITHUB_LANGUAGES } from '../utils'
 
-export type GitHubRepoResponse = {
+export type GhLanguage = (typeof GITHUB_LANGUAGES)[number]
+
+export type GhRepoFullName = string
+
+export type GhRepoBase = {
+    full_name: GhRepoFullName
+    html_url: string
+    url: string
+}
+
+export type GhRepoResponse = GhRepoBase & {
     id: number
     node_id: string
     name: string
-    full_name: string
     private: boolean
-    owner: UserOrOrganization
+    owner: GhUserOrOrganization
     html_url: string
     description: string
     fork: boolean
@@ -58,7 +67,7 @@ export type GitHubRepoResponse = {
     size: number
     stargazers_count: number
     watchers_count: number
-    language: GitHubLanguage
+    language: GhLanguage
     has_issues: boolean
     has_projects: boolean
     has_downloads: boolean
@@ -87,12 +96,12 @@ export type GitHubRepoResponse = {
     watchers: number
     default_branch: string
     temp_clone_token: null | string
-    organization: UserOrOrganization
+    organization: GhUserOrOrganization
     network_count: number
     subscribers_count: number
 }
 
-export type UserOrOrganization = {
+export type GhUserOrOrganization = {
     login: string
     id: number
     node_id: string
@@ -111,4 +120,40 @@ export type UserOrOrganization = {
     received_events_url: string
     type: string
     site_admin: boolean
+}
+
+export type GhTreeItem = {
+    path: string
+    mode: string
+    type: 'blob' | 'tree'
+    sha: string
+    size?: number
+    url: string
+}
+
+export type GhBranch = {
+    name: string
+    commit: {
+        sha: string
+        url: string
+    }
+    protected: boolean
+}
+
+export type GhCommit = {
+    sha: string
+    commit: {
+        author: {
+            name: string
+            email: string
+            date: string
+        }
+        message: string
+    }
+}
+
+export type GhContributor = {
+    login: string
+    id: number
+    contributions: number
 }

@@ -1,4 +1,4 @@
-import { getGithubList, getGithubRepo, getGithubUrls, getGithubRepoLanguages } from '@qolt/data-github'
+import { getGithubList, getGithubRepo, getGhRepoBase, getGithubRepoLanguages } from '@qolt/data-github'
 import { AtomicType, RepoMetadata, RepoSource } from 'domain/models/RepoMetadata'
 import { getRepoMetadataService } from 'domain/services/repoMetadataService'
 import { NextRequest } from 'next/server'
@@ -14,10 +14,10 @@ export async function GET(req: NextRequest, { params: { ghListName } }: RoutePar
             repoIds.map(async (repoId) => {
                 try {
                     let metadata = await repoMetadataService.getRepoMetadata(repoId)
-                    const { apiUrl } = getGithubUrls(repoId)
+                    const repoBase = getGhRepoBase(repoId)
                     const [githubData, languages] = await Promise.all([
-                        getGithubRepo(apiUrl),
-                        getGithubRepoLanguages(apiUrl),
+                        getGithubRepo(repoBase),
+                        getGithubRepoLanguages(repoBase),
                     ])
 
                     if (!metadata) {

@@ -28,6 +28,6 @@
         "config-tsconfig": "*"
     },
     "dependencies": {
-        "react-resizable-panels": "^2.0.21"
+        "react-resizable-panels": "^2.0.22"
     }
 }
