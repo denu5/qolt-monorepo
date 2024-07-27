@@ -1,35 +1,30 @@
-import { MongoClient, Db, Collection, MongoClientOptions, Document } from 'mongodb'
+import { MongoClient, Collection, Db, ObjectId } from 'mongodb'
 
-const MONGO_URL = process.env.MONGO_URL || ''
+let client: MongoClient
+let db: Db
 
-let client: MongoClient | null = null
-let db: Db | null = null
-
-async function connectDb(options?: MongoClientOptions): Promise<MongoClient> {
-    if (!client) {
-        client = new MongoClient(MONGO_URL, options)
-        await client.connect()
-        console.log('Connected to MongoDB')
+export async function connectToDatabase(): Promise<void> {
+    const uri = process.env.MONGODB_URI
+    if (!uri) {
+        throw new Error('MONGODB_URI is not defined in the environment variables')
     }
-    return client
+
+    client = new MongoClient(uri)
+    await client.connect()
+    db = client.db(process.env.MONGODB_DB_NAME)
+    console.log('Connected to MongoDB')
 }
 
-async function getDb(): Promise<Db> {
+export async function getCollection<T extends { _id: ObjectId }>(collectionName: string): Promise<Collection<T>> {
     if (!db) {
-        const client = await connectDb()
-        db = client.db()
+        await connectToDatabase()
     }
-    return db
-}
-
-export async function getCollection<T extends Document>(collectionName: string): Promise<Collection<T>> {
-    const db = await getDb()
     return db.collection<T>(collectionName)
 }
 
-export function convertToPlainObject<T>(doc: any) {
-    // Convert the document to a JSON string, then parse it back to a plain object
-    const plainObjectJson = JSON.stringify(doc)
-    const plainObject = JSON.parse(plainObjectJson) as unknown as T
-    return plainObject
+export async function closeConnection(): Promise<void> {
+    if (client) {
+        await client.close()
+        console.log('Disconnected from MongoDB')
+    }
 }

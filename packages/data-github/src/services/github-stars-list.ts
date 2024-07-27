@@ -1,65 +1,112 @@
 import { load } from 'cheerio'
 import { GhRepoFullName } from 'models'
 
-// Retrieves the GitHub user from environment variables
-function getGithubUser(): string {
-    const githubUser = process.env.GITHUB_USER
-    if (!githubUser) {
-        throw new Error('GITHUB_USER environment variable is not defined.')
-    }
-    return githubUser
+/**
+ * GitHub Lists is currently a beta feature without an official API.
+ * As of 2024, GitHub hasn't provided a public API for accessing list data.
+ * This necessitates web scraping to interact with GitHub Lists programmatically.
+ *
+ * These functions allow retrieval of GitHub List data through HTML scraping.
+ * Be aware that web scraping may be against GitHub's terms of service.
+ * Use responsibly and check GitHub's robots.txt and terms of service before deployment.
+ */
+
+type GithubListOptions = {
+    username: string
+    listName: string
 }
 
-const GITHUB_USER_LISTS_URL = `https://github.com/stars/${getGithubUser()}/lists`
-
-// Constructs the URL for a specific GitHub list
-export const getGithubListsHtmlUrl = (listName: string): string => {
-    return `${GITHUB_USER_LISTS_URL}/${listName}`
+/**
+ * Constructs the URL for a specific GitHub list.
+ *
+ * @param {GithubListOptions} options - The options containing username and list name.
+ * @returns {string} The URL for the specified GitHub list.
+ */
+export const getGithubListsHtmlUrl = ({ username, listName }: GithubListOptions): string => {
+    return `https://github.com/stars/${username}/lists/${listName}`
 }
 
-// Fetches a specific page of the list and extracts repository full names
-async function fetchListPage(listName: string, page: number): Promise<GhRepoFullName[]> {
-    const url = `${getGithubListsHtmlUrl(listName)}/?page=${page}`
+/**
+ * Fetches a specific page of a GitHub list and extracts repository full names.
+ *
+ * @param {GithubListOptions} options - The options containing username and list name.
+ * @param {number} page - The page number to fetch.
+ * @returns {Promise<GhRepoFullName[]>} A promise that resolves to an array of repository full names.
+ * @throws {Error} If the fetch request fails.
+ */
+async function fetchListPage({ username, listName }: GithubListOptions, page: number): Promise<GhRepoFullName[]> {
+    const url = `${getGithubListsHtmlUrl({ username, listName })}?page=${page}`
     const response = await fetch(url)
 
     if (!response.ok) {
         throw new Error(
-            `Failed to fetch GitHub list "${listName}" (Page ${page}): ${response.status} ${response.statusText}`,
+            `Failed to fetch GitHub list "${listName}" for user "${username}" (Page ${page}): ${response.status} ${response.statusText}`,
         )
     }
 
     const htmlText = await response.text()
     const $ = load(htmlText)
 
-    // Extract repository full names from the HTML
-    const items = $('h3 a') // List of repos as links
+    return $('h3 a')
         .map((_, el) => {
             const repoHref = $(el).attr('href') ?? ''
             return repoHref.slice(1) // Remove leading slash
         })
         .get()
-
-    return items
 }
 
-// Retrieves all repositories from a GitHub list, handling pagination
-export async function getGithubList(listName: string): Promise<GhRepoFullName[]> {
+/**
+ * Retrieves all repositories from a GitHub list, handling pagination.
+ *
+ * @param {string} username - The GitHub username.
+ * @param {string} listName - The name of the list to retrieve.
+ * @returns {Promise<GhRepoFullName[]>} A promise that resolves to an array of all repository full names in the list.
+ */
+export async function getGithubList(username: string, listName: string): Promise<GhRepoFullName[]> {
     const items: GhRepoFullName[] = []
     let page = 1
     let hasMore = true
 
     while (hasMore) {
         try {
-            const pageItems = await fetchListPage(listName, page)
+            const pageItems = await fetchListPage({ username, listName }, page)
             items.push(...pageItems)
-            // Check if there are more pages based on the number of items
             hasMore = pageItems.length === 30 // Adjust if the limit changes
             page++
         } catch (error) {
-            console.error(`Error fetching GitHub list "${listName}": ${error}`)
-            break // Exit loop if there's an error
+            console.error(`Error fetching GitHub list "${listName}" for user "${username}": ${error}`)
+            break
         }
     }
 
     return items
+}
+
+/**
+ * Retrieves all list names for a given GitHub user.
+ *
+ * @param {string} username - The GitHub username.
+ * @returns {Promise<string[]>} A promise that resolves to an array of list names.
+ * @throws {Error} If the fetch request fails.
+ */
+export async function getGithubUserLists(username: string): Promise<string[]> {
+    const url = `https://github.com/${username}?tab=stars&user_lists_direction=asc&user_lists_sort=name`
+
+    const response = await fetch(url)
+    if (!response.ok) {
+        throw new Error(`Failed to fetch user lists for "${username}": ${response.status} ${response.statusText}`)
+    }
+
+    const htmlText = await response.text()
+    const $ = load(htmlText)
+
+    const listUrls: string[] = []
+    $('a').each((_, element) => {
+        const href = $(element).attr('href')
+        if (href && href.match(/^\/stars\/[^/]+\/lists\/[^/]+$/)) {
+            listUrls.push(href.split('/').pop() as string) // Extract just the list name
+        }
+    })
+
+    return listUrls
 }

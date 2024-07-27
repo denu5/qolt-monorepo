@@ -10,7 +10,7 @@ function getGithubPAT(): string {
 }
 
 // Fetches data from the GitHub API with error handling
-async function fetchGithubAPI<T>(url: string): Promise<T> {
+export async function fetchGithubAPI<T>(url: string): Promise<T> {
     const response = await fetch(url, {
         headers: {
             Authorization: `Bearer ${getGithubPAT()}`,

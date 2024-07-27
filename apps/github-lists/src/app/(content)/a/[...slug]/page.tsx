@@ -2,7 +2,7 @@ import { Stack, Typography } from '@mui/joy'
 import { Mdx } from '@qolt/app-components'
 import { getContentMetaData, getDocBySlug } from '@qolt/app-contentlayer'
 import { allArticles } from 'contentlayer/generated'
-import { ProjectTree } from 'domain/components/ProjectTree'
+import { DirTreeRenderer, InputType, RenderMode } from 'domain/components/DirTreeRenderer'
 
 type PageProps = {
     params: {
@@ -15,7 +15,9 @@ export function generateMetadata({ params }: PageProps) {
 }
 
 const defaultComponents = {
-    ProjectTree: ({ ...props }) => <ProjectTree {...props} inputMode="treePlusMinus" renderMode="treeUnix" />,
+    ProjectTree: ({ ...props }) => (
+        <DirTreeRenderer {...props} inputType={InputType.PLUS_MINUS} renderMode={RenderMode.ANSI} />
+    ),
 }
 
 export default function Page({ params }: PageProps) {

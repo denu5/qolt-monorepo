@@ -9,12 +9,14 @@
         "lint-fix": "eslint --fix ."
     },
     "dependencies": {
+        "@iarna/toml": "^2.2.5",
         "@qolt/app-components": "*",
         "@qolt/app-contentlayer": "*",
         "@qolt/data-github": "*",
         "mdx-mermaid": "^2.0.0",
         "mermaid": "^10.9.1",
-        "mongodb": "^6.8.0"
+        "mongodb": "^6.8.0",
+        "packageurl-js": "^1.2.1"
     },
     "devDependencies": {
         "config-tsconfig": "*"

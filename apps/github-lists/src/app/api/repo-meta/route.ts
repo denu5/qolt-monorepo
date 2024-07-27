@@ -1,12 +1,12 @@
-import { RepoMetadata } from 'domain/models/RepoMetadata'
-import { getRepoMetadataService } from 'domain/services/repoMetadataService'
+import { RepoMetadata, RepoMetadataInput } from 'domain/models/RepoMetadata'
+import { RepoMetadataService } from 'domain/services/repoMetadataService'
 import { NextRequest } from 'next/server'
 
 export async function POST(req: NextRequest) {
-    const repoMetadataService = await getRepoMetadataService()
+    const repoMetadataService = await RepoMetadataService.init()
 
     try {
-        const data = (await req.json()) as RepoMetadata
+        const data = (await req.json()) as RepoMetadataInput
         await repoMetadataService.createRepoMetadata(data)
 
         return Response.json({ message: 'Repo metadata inserted successfully.' })
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-    const repoMetadataService = await getRepoMetadataService()
+    const repoMetadataService = await RepoMetadataService.init()
 
     try {
         const { searchParams } = req.nextUrl

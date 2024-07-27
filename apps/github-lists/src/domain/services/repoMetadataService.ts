@@ -1,11 +1,25 @@
-import { Collection } from 'mongodb'
-import { RepoMetadata, RepoSource, AtomicType } from '../models/RepoMetadata'
+import { RepoMetadata, RepoSource, AtomicType, Fork, RepoMetadataInput } from '../models/RepoMetadata'
 import { getCollection } from '../utils/mongoUtil'
+import { Collection, ObjectId } from 'mongodb'
 
-class RepoMetadataService {
-    constructor(protected collection: Collection<RepoMetadata>) {}
+export class RepoMetadataService {
+    private collection: Collection<RepoMetadata>
 
-    async createRepoMetadata(metadata: RepoMetadata): Promise<RepoMetadata> {
+    constructor(collection: Collection<RepoMetadata>) {
+        this.collection = collection
+    }
+
+    static async init(): Promise<RepoMetadataService> {
+        const collection = await getCollection<RepoMetadata>('RepoMetadata')
+        return new RepoMetadataService(collection)
+    }
+
+    async createRepoMetadata(metadata: RepoMetadataInput): Promise<RepoMetadata> {
+        const now = new Date()
+        metadata.createdAt = now
+        metadata.updatedAt = now
+
+        // @ts-expect-error metadata id stuff pls fix
         const insertResult = await this.collection.insertOne(metadata)
         const insertedDocument = await this.collection.findOne({ _id: insertResult.insertedId })
         if (!insertedDocument) {
@@ -14,8 +28,9 @@ class RepoMetadataService {
         return insertedDocument
     }
 
-    async updateRepoMetadata(metadata: RepoMetadata): Promise<RepoMetadata> {
+    async updateRepoMetadata(metadata: Partial<RepoMetadata>): Promise<RepoMetadata> {
         const { repoId } = metadata
+        metadata.updatedAt = new Date()
         const updateResult = await this.collection.findOneAndUpdate(
             { repoId },
             { $set: metadata },
@@ -39,6 +54,8 @@ class RepoMetadataService {
         source?: RepoSource
         atomicType?: AtomicType
         tags?: string[]
+        dependency?: string
+        dependencyType?: 'production' | 'development'
         sortField?: string
         sortDirection?: 'asc' | 'desc'
     }) {
@@ -46,6 +63,12 @@ class RepoMetadataService {
         if (options.source) query.source = options.source
         if (options.atomicType) query.atomicType = options.atomicType
         if (options.tags && options.tags.length > 0) query.tags = { $all: options.tags }
+        if (options.dependency) {
+            query['dependencies.name'] = options.dependency
+            if (options.dependencyType) {
+                query['dependencies.type'] = options.dependencyType
+            }
+        }
 
         const cursor = this.collection.find(query)
 
@@ -56,14 +79,42 @@ class RepoMetadataService {
 
         return await cursor.toArray()
     }
-}
 
-let repoMetadataService: RepoMetadataService | null = null
-
-export async function getRepoMetadataService() {
-    if (!repoMetadataService) {
-        const collection = await getCollection<RepoMetadata>('RepoMetadata')
-        repoMetadataService = new RepoMetadataService(collection)
+    async addFork(repoId: string, fork: Fork): Promise<RepoMetadata> {
+        const now = new Date()
+        fork.createdAt = now
+        fork.updatedAt = now
+        const updateResult = await this.collection.findOneAndUpdate(
+            { repoId },
+            {
+                $push: { forks: fork },
+                $set: { updatedAt: now },
+            },
+            { returnDocument: 'after' },
+        )
+        if (!updateResult) {
+            throw new Error('No document found with the given repoId.')
+        }
+        return updateResult
     }
-    return repoMetadataService
+
+    async updateFork(repoId: string, forkId: ObjectId, update: Partial<Fork>): Promise<RepoMetadata> {
+        const now = new Date()
+        update.updatedAt = now
+        const updateResult = await this.collection.findOneAndUpdate(
+            { repoId, 'forks.userId': forkId },
+            {
+                $set: Object.entries(update).reduce((acc, [key, value]) => {
+                    acc[`forks.$.${key}`] = value
+                    return acc
+                }, {} as any),
+                updatedAt: now,
+            },
+            { returnDocument: 'after' },
+        )
+        if (!updateResult) {
+            throw new Error('No document or fork found with the given repoId and forkId.')
+        }
+        return updateResult
+    }
 }

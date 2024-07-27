@@ -1,14 +1,13 @@
 import OpenInNewIcon from '@mui/icons-material/OpenInNewRounded'
-import { Button, List, ListItem, Stack, Typography } from '@mui/joy'
+import { Button, List, ListItem, Stack } from '@mui/joy'
 import { DrawerLayout } from '@qolt/app-components'
-import { Mdx } from '@qolt/app-components/_client'
 import { getContentMetaData, getDocBySlug } from '@qolt/app-contentlayer'
-import { getGithubList, getGithubListsHtmlUrl } from '@qolt/data-github'
 import { Suspense } from 'react'
 
 import { allGithubLists } from 'contentlayer/generated'
 import { GhListRepoCount$ } from 'domain/components/GhListRepoCount'
 import { GhRepoCard$ } from 'domain/components/GhRepoCard'
+import { getOwnGithubList, getOwnGithubListsHtmlUrl } from 'domain/utils/githubListsUtils'
 
 type PageProps = { params: { docListName: string } }
 
@@ -18,7 +17,7 @@ export function generateMetadata({ params: { docListName } }: PageProps) {
 
 export default async function GhListPage({ params: { docListName } }: PageProps) {
     const doc = getDocBySlug(allGithubLists, docListName)
-    const items = await getGithubList(doc.ghListName)
+    const items = await getOwnGithubList(doc.ghListName)
 
     return (
         <DrawerLayout.Children>
@@ -28,7 +27,7 @@ export default async function GhListPage({ params: { docListName } }: PageProps)
                     <Button
                         size="sm"
                         component="a"
-                        href={getGithubListsHtmlUrl(doc.ghListName)}
+                        href={getOwnGithubListsHtmlUrl(doc.ghListName)}
                         target="_blank"
                         title="View list on github"
                         color="neutral"

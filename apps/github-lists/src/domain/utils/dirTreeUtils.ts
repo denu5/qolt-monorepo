@@ -1,3 +1,5 @@
+import { GhTreeItem } from '@qolt/data-github'
+
 const SYMBOLS = {
     BRANCH: '├── ',
     LAST_BRANCH: '└── ',
@@ -11,16 +13,7 @@ export interface DirTree {
     children?: DirTree[]
 }
 
-export interface GitTreeItem {
-    path: string
-    mode: string
-    type: 'blob' | 'tree'
-    sha: string
-    size?: number
-    url: string
-}
-
-export function gitTreeToDirectoryTree(gitTree: GitTreeItem[]): DirTree {
+export function gitTreeToDirectoryTree(gitTree: GhTreeItem[]): DirTree {
     const root: DirTree = { path: '', name: '', children: [] }
     const map = new Map<string, DirTree>()
 
@@ -121,9 +114,15 @@ export function directoryTreeToPlusMinus(node: DirTree, level = 0): string {
 
     return result
 }
+export interface DirTree {
+    name: string
+    path: string
+    children?: DirTree[]
+}
 
 export function parsePlusMinusToDirectoryTree(input: string): DirTree {
     const lines = input.trim().split('\n')
+
     const root: DirTree = { path: '', name: 'root', children: [] }
     const stack: { level: number; node: DirTree }[] = [{ level: -1, node: root }]
 
@@ -136,8 +135,8 @@ export function parsePlusMinusToDirectoryTree(input: string): DirTree {
         const isDirectory = prefix === '+'
 
         const node: DirTree = {
-            name,
-            path: '', // We don't have the full path information from the plus-minus representation
+            name: name.trim(),
+            path: '',
             children: isDirectory ? [] : undefined,
         }
 
@@ -146,12 +145,15 @@ export function parsePlusMinusToDirectoryTree(input: string): DirTree {
         }
 
         const parent = stack[stack.length - 1].node
-        parent.children?.push(node)
+        parent.children!.push(node)
+
+        // Update the path
+        node.path = parent.path ? `${parent.path}/${node.name}` : node.name
 
         if (isDirectory) {
             stack.push({ level, node })
         }
     })
 
-    return root.children?.[0] ?? root // Return the first child as the root, or root if it's empty
+    return root.children![0] ?? root
 }
