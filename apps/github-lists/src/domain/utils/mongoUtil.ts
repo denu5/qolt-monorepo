@@ -11,6 +11,7 @@ export async function connectToDatabase(): Promise<void> {
 
     client = new MongoClient(uri)
     await client.connect()
+
     db = client.db(process.env.MONGODB_DB_NAME)
     console.log('Connected to MongoDB')
 }

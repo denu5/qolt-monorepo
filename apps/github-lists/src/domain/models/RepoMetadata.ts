@@ -33,12 +33,12 @@ export type RepoMetadata = {
     tags: string[]
     language?: GhRepoResponse['language'] // Optional field for the primary language of the repo, see github api
     languages?: Partial<Record<GhRepoResponse['language'], number>> // Object containing language names and byte counts
-    directoryTree: DirTree
-    dependencies: IDependency[]
-    forks: Fork[]
+    directoryTree?: DirTree
+    dependencies?: IDependency[]
+    forks?: Fork[]
     createdAt: Date
     updatedAt: Date
 }
 
 // If you need to create a RepoMetadata object without an _id (e.g., when inserting a new document),
-export type RepoMetadataInput = Omit<RepoMetadata, '_id'> & { _id?: ObjectId }
+export type RepoMetadataInput = Omit<RepoMetadata, '_id'>

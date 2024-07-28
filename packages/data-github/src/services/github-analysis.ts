@@ -7,7 +7,7 @@ import {
     getGithubRepoTopics,
 } from './github-rest-api'
 
-import { GhRepoBase } from 'models'
+import { GhRepoBase, SBOM } from 'models'
 import { fetchGithubAPI } from './github-rest-api'
 
 // Analyzes the repository structure to determine file types and directory structure
@@ -83,89 +83,115 @@ export async function performCompleteRepoAnalysis(repo: GhRepoBase) {
     }
 }
 
-// https://docs.github.com/en/rest/dependency-graph/dependency-review
-
 /**
- * 
- * Use the REST API to interact with dependency changes.
-
-About dependency review
-You can use the REST API to view dependency changes, and the security impact of these changes, before you add them to your environment. You can view the diff of dependencies between two commits of a repository, including vulnerability data for any version updates with known vulnerabilities. For more information about dependency review, see "About dependency review."
+ * Represents a single dependency in a project.
  */
-
 export type Dependency = {
+    /**
+     * The package URL (PURL) that uniquely identifies the dependency.
+     * @see {@link https://github.com/package-url/purl-spec} for PURL specification.
+     */
     package_url: string
+    /** Metadata about the dependency. */
     metadata: {
+        /** The name of the dependency. */
         name: string
+        /** The version of the dependency, if available. */
         version?: string
     }
+    /**
+     * Indicates whether the dependency is directly required by the project or is a subdependency.
+     */
     relationship: 'direct' | 'indirect'
+    /**
+     * Indicates whether the dependency is used in development or at runtime.
+     * This field is optional and may not be present for all dependencies.
+     */
     scope?: 'development' | 'runtime'
 }
 
+/**
+ * Represents a change in dependencies between two commits.
+ */
 export type DependencyDiff = {
+    /** The type of change that occurred to the dependency. */
     change_type: 'added' | 'removed' | 'changed'
+    /** The manifest file where the dependency is declared. */
     manifest: string
+    /** The ecosystem of the dependency (e.g., npm, pip, maven). */
     ecosystem: string
+    /** The name of the dependency. */
     name: string
+    /** The version of the dependency, if available. */
     version?: string
+    /**
+     * The package URL (PURL) that uniquely identifies the dependency.
+     * @see {@link https://github.com/package-url/purl-spec} for PURL specification.
+     */
     package_url: string
+    /** The license of the dependency, if available. */
     license?: string
+    /** The URL of the source repository for the dependency, if available. */
     source_repository_url?: string
 }
 
-export type DependencySnapshot = {
-    version: 1
-    job: {
-        id: string
-        correlator: string
-        html_url?: string
-    }
-    sha: string
-    ref: string
-    detector: {
-        name: string
-        version: string
-        url: string
-    }
-    metadata: {
-        [key: string]: any
-    }
-    manifests: {
-        [name: string]: {
-            name: string
-            file: {
-                source_location: string
-            }
-            metadata: {
-                [key: string]: any
-            }
-            resolved: {
-                [name: string]: Dependency
-            }
-        }
-    }
-}
-
+/**
+ * Represents the response from the GitHub API for a dependency graph diff request.
+ */
 export type DependencyGraphDiffResponse = {
+    /** An array of dependency differences between the two compared commits. */
     differences: DependencyDiff[]
 }
 
-export type SBOMResponse = {
-    sbom: string
-}
-
-// Retrieves the diff of dependencies between two commits
+/**
+ * Retrieves the diff of dependencies between two commits.
+ *
+ * This function makes an API call to GitHub to fetch the dependency changes between two specified commits.
+ * It's useful for understanding how dependencies have changed in a project over time, including additions,
+ * removals, and version changes.
+ *
+ * @param repo - The GitHub repository object containing the URL for the API call.
+ * @param basehead - A string in the format "base...head" where base and head are commit SHAs or refs to compare.
+ * @returns A Promise that resolves to a DependencyGraphDiffResponse containing the differences in dependencies.
+ *
+ * @example
+ * const repo = { url: 'https://api.github.com/repos/owner/repo' };
+ * const diff = await getDependencyDiff(repo, 'main...feature-branch');
+ * diff.differences.forEach(change => {
+ *   console.log(`${change.change_type}: ${change.name} ${change.version || ''}`);
+ * });
+ *
+ * @see For more information on dependency review, visit:
+ * @see {@link https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/about-dependency-review} - About dependency review
+ * @see {@link https://docs.github.com/en/rest/dependency-graph/dependency-review} - Dependency review API documentation
+ */
 export async function getDependencyDiff(repo: GhRepoBase, basehead: string): Promise<DependencyGraphDiffResponse> {
     return fetchGithubAPI<DependencyGraphDiffResponse>(`${repo.url}/dependency-graph/compare/${basehead}`)
 }
 
-// Retrieves the list of dependency submission snapshots for a repository
-export async function getDependencySnapshots(repo: GhRepoBase): Promise<DependencySnapshot[]> {
-    return fetchGithubAPI<DependencySnapshot[]>(`${repo.url}/dependency-graph/snapshots`)
-}
+/**
+ * Retrieves the SBOM (Software Bill of Materials) for a repository.
+ *
+ * This function makes an API call to GitHub to fetch the SBOM data for the specified repository.
+ * The SBOM provides a comprehensive list of all software components and dependencies used in the project.
+ *
+ * @param repo - The GitHub repository object containing the URL for the API call.
+ * @returns A Promise that resolves to an SBOMResponse containing the SBOM data.
+ *
+ * @example
+ * const repo = { url: 'https://api.github.com/repos/owner/repo' };
+ * const sbomData = await getSBOM(repo);
+ * console.log(sbomData.sbom.name); // Logs the name of the SBOM
+ *
+ * @see For more information on SBOMs, visit:
+ * @see {@link https://www.cisa.gov/sbom} - CISA SBOM Resources
+ * @see {@link https://cyclonedx.org/} - CycloneDX SBOM Standard
+ * @see {@link https://spdx.dev/} - SPDX SBOM Standard
+ */
+export async function getSBOM(repo: GhRepoBase) {
+    type SBOMResponse = {
+        sbom: SBOM
+    }
 
-// Retrieves the SBOM (Software Bill of Materials) for a repository
-export async function getSBOM(repo: GhRepoBase): Promise<SBOMResponse> {
     return fetchGithubAPI<SBOMResponse>(`${repo.url}/dependency-graph/sbom`)
 }

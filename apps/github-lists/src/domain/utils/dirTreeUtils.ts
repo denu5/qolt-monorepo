@@ -14,29 +14,32 @@ export interface DirTree {
 }
 
 export function gitTreeToDirectoryTree(gitTree: GhTreeItem[]): DirTree {
-    const root: DirTree = { path: '', name: '', children: [] }
-    const map = new Map<string, DirTree>()
+    const sortedTree = [...gitTree].sort((a, b) => a.path.localeCompare(b.path))
 
-    gitTree.forEach((item) => {
-        const parts = item.path.split('/')
-        let currentPath = ''
-        let currentNode = root
+    function buildTree(items: GhTreeItem[], parentPath: string = ''): DirTree[] {
+        return items
+            .filter((item) => {
+                const itemPath = item.path
+                return (
+                    itemPath.startsWith(parentPath) &&
+                    (parentPath === '' || itemPath.slice(parentPath.length).split('/').filter(Boolean).length === 1)
+                )
+            })
+            .map((item) => {
+                const name = item.path.slice(parentPath.length).split('/').filter(Boolean)[0]
+                const path = parentPath ? `${parentPath}/${name}` : name
+                const children = buildTree(items, path)
 
-        parts.forEach((part, index) => {
-            currentPath += (index > 0 ? '/' : '') + part
-            if (!map.has(currentPath)) {
-                const newNode: DirTree = { path: currentPath, name: part }
-                if (item.type === 'tree' || index < parts.length - 1) {
-                    newNode.children = []
+                return {
+                    path,
+                    name,
+                    ...(children.length > 0 ? { children } : {}),
                 }
-                map.set(currentPath, newNode)
-                currentNode.children!.push(newNode)
-            }
-            currentNode = map.get(currentPath)!
-        })
-    })
+            })
+    }
 
-    return root.children![0] // Return the top-level directory
+    const result = buildTree(sortedTree)
+    return { path: '', name: '', children: result }
 }
 
 export function dirTreeToAnsi(node: DirTree, prefix = '', isLast = true): string {

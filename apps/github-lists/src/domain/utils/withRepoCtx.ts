@@ -22,21 +22,17 @@ export async function withRepoCtx<T>(
     handler: (context: RepoCtx) => Promise<T>,
 ): Promise<T> {
     await connectToDatabase()
-    try {
-        const service = await RepoMetadataService.init()
-        const { userId, apiKey } = getAuth(req)
+    const service = await RepoMetadataService.init()
+    const { userId, apiKey } = getAuth(req)
 
-        const repoId = params.repoId ? toGithubRepoId(params.repoId) : null
-        const context: RepoCtx = {
-            userId,
-            apiKey,
-            repoMetadataService: service,
-            repoId,
-        }
-        return await handler(context)
-    } finally {
-        await closeConnection()
+    const repoId = params.repoId ? toGithubRepoId(params.repoId) : null
+    const context: RepoCtx = {
+        userId,
+        apiKey,
+        repoMetadataService: service,
+        repoId,
     }
+    return await handler(context)
 }
 
 export function handleError(error: unknown) {
@@ -47,26 +43,29 @@ export function handleError(error: unknown) {
     return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 })
 }
 
+const ANON_USER_ID = new ObjectId('000000000000000000000000')
+
 function getAuth(req: NextRequest): { userId: ObjectId; apiKey: string | null } {
-    const userIdHeader = req.headers.get('X-User-ID') || 'anon'
+    const userIdHeader = req.headers.get('X-User-ID')
     const apiKey = req.headers.get('X-API-Key')
     const userIdParam = req.nextUrl.searchParams.get('userId')
 
     let userId: string | null = null
 
-    if (userIdHeader) {
+    if (userIdHeader && userIdHeader !== 'anon') {
         userId = userIdHeader
     } else if (apiKey) {
         userId = validateApiKey(apiKey)
-    } else if (userIdParam) {
+    } else if (userIdParam && userIdParam !== 'anon') {
         userId = userIdParam
     }
 
-    if (!userId) {
-        throw new Error('User not authenticated')
+    if (userId) {
+        return { userId: new ObjectId(userId), apiKey }
+    } else {
+        // Use the hardcoded anonymous ObjectId
+        return { userId: ANON_USER_ID, apiKey: null }
     }
-
-    return { userId: new ObjectId(userId), apiKey }
 }
 
 function validateApiKey(apiKey: string): string | null {

@@ -95,3 +95,37 @@ export async function getGithubRepoTopics(repo: GhRepoBase): Promise<string[]> {
     const response = await fetchGithubAPI<{ names: string[] }>(`${repo.url}/topics`)
     return response.names
 }
+
+interface GitHubFileContent {
+    content: string
+    encoding: string
+    path: string
+}
+
+export async function getGithubRepoContents (
+    repo: GhRepoBase,
+    path: string,
+    branch: string = 'main',
+) {
+    const url = `${repo.url}/contents/${path}?ref=${branch}`
+
+    try {
+        const response = await fetchGithubAPI<GitHubFileContent & { name: string; type: string }>(url)
+
+        if (response.content && response.encoding) {
+            return {
+                content: response.content,
+                encoding: response.encoding,
+                path: response.path,
+            }
+        } else {
+            throw new Error('Unexpected response format from GitHub API')
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(`Failed to fetch file content for ${path}: ${error.message}`)
+        } else {
+            throw new Error(`An unknown error occurred while fetching file content for ${path}`)
+        }
+    }
+}
