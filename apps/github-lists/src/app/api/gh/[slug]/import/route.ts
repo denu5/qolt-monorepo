@@ -5,12 +5,12 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(req: NextRequest, { params }: RouteArgs) {
     return withRepoCtx(req, { params }, async (ctx) => {
         try {
-            const { repoId } = await req.json()
-            if (!repoId) {
+            const { slug } = await req.json()
+            if (!slug) {
                 return NextResponse.json({ error: 'Repository ID is required' }, { status: 400 })
             }
 
-            const result = await importRepo(repoId, ctx.repoMetadataService)
+            const result = await importRepo(slug, ctx.repoMetadataService)
             return NextResponse.json(result)
         } catch (error) {
             return handleError(error)

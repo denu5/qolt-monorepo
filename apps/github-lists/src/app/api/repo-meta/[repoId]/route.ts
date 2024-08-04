@@ -5,14 +5,14 @@ import { handleError, RouteArgs, withRepoCtx } from 'domain/utils/withRepoCtx'
 export async function GET(req: NextRequest, { params }: RouteArgs) {
     return withRepoCtx(req, { params }, async (ctx) => {
         try {
-            if (ctx.repoId) {
-                const repo = await ctx.repoMetadataService.getRepoMetadata(ctx.repoId)
+            if (ctx.slug) {
+                const repo = await ctx.repoMetadataService.getRepoMetadata(ctx.slug)
                 if (!repo) {
                     return NextResponse.json({ error: 'Repository not found' }, { status: 404 })
                 }
                 const responseRepo = {
                     ...repo,
-                    repoId: toUrlSafeRepoId(repo.repoId),
+                    slug: toUrlSafeRepoId(repo.slug),
                 }
                 return NextResponse.json({ data: responseRepo })
             } else {
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest, { params }: RouteArgs) {
                 const repos = await ctx.repoMetadataService.queryRepoMetadata(queryParams)
                 const responseRepos = repos.map((repo) => ({
                     ...repo,
-                    repoId: toUrlSafeRepoId(repo.repoId),
+                    slug: toUrlSafeRepoId(repo.slug),
                 }))
                 return NextResponse.json({ data: responseRepos })
             }
@@ -33,16 +33,16 @@ export async function GET(req: NextRequest, { params }: RouteArgs) {
 export async function DELETE(req: NextRequest, { params }: RouteArgs) {
     return withRepoCtx(req, { params }, async (ctx) => {
         try {
-            if (!ctx.repoId) {
+            if (!ctx.slug) {
                 return NextResponse.json({ error: 'Repository ID is required' }, { status: 400 })
             }
 
-            const repo = await ctx.repoMetadataService.getRepoMetadata(ctx.repoId)
+            const repo = await ctx.repoMetadataService.getRepoMetadata(ctx.slug)
             if (!repo) {
                 return NextResponse.json({ error: 'Repository not found' }, { status: 404 })
             }
 
-            await ctx.repoMetadataService.deleteRepoMetadata(ctx.repoId)
+            await ctx.repoMetadataService.deleteRepoMetadata(ctx.slug)
             return new NextResponse(null, { status: 204 })
         } catch (error) {
             return handleError(error)

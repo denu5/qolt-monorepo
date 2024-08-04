@@ -15,7 +15,7 @@ export default function DrawerLayout({ children }: React.PropsWithChildren) {
                 <SidebarList>
                     {allGithubLists.map((item) => (
                         <ListItem key={item.slug}>
-                            <SidebarListButton href={`/g/list/${item.slug}`}>
+                            <SidebarListButton href={`/g/lists/${item.slug}`}>
                                 <ListItemContent>{item.title}</ListItemContent>
                                 <Typography level="body-sm" sx={{ fontWeight: 'bold', color: 'inherit' }}>
                                     <GhListRepoCount$ ghListName={item.ghListName} />

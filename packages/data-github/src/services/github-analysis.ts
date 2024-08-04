@@ -7,11 +7,10 @@ import {
     getGithubRepoTopics,
 } from './github-rest-api'
 
-import { GhRepoBase, SBOM } from 'models'
-import { fetchGithubAPI } from './github-rest-api'
+import { PackageURL } from 'packageurl-js'
 
 // Analyzes the repository structure to determine file types and directory structure
-export async function analyzeRepoStructure(repo: GhRepoBase) {
+export async function analyzeRepoStructure(repo: PackageURL) {
     const tree = await getGithubFullTree(repo)
     const fileTypes = new Map<string, number>()
     const directoryStructure: Record<string, string[]> = {}
@@ -36,7 +35,7 @@ export async function analyzeRepoStructure(repo: GhRepoBase) {
 }
 
 // Analyzes repository activity to determine commit frequency and top contributors
-export async function analyzeRepoActivity(repo: GhRepoBase) {
+export async function analyzeRepoActivity(repo: PackageURL) {
     const [commits, contributors] = await Promise.all([getGithubRepoCommits(repo), getGithubRepoContributors(repo)])
 
     const commitFrequency = commits.reduce(
@@ -54,14 +53,14 @@ export async function analyzeRepoActivity(repo: GhRepoBase) {
 }
 
 // Analyzes the repository stack to determine programming languages and topics
-export async function analyzeRepoStack(repo: GhRepoBase) {
+export async function analyzeRepoStack(repo: PackageURL) {
     const [languages, topics] = await Promise.all([getGithubRepoLanguages(repo), getGithubRepoTopics(repo)])
 
     return { languages, topics }
 }
 
 // Performs a complete analysis of the repository, including basic info, structure, activity, and stack
-export async function performCompleteRepoAnalysis(repo: GhRepoBase) {
+export async function performCompleteRepoAnalysis(repo: PackageURL) {
     const [repoData, structure, activity, stack] = await Promise.all([
         getGithubRepo(repo),
         analyzeRepoStructure(repo),
@@ -83,115 +82,35 @@ export async function performCompleteRepoAnalysis(repo: GhRepoBase) {
     }
 }
 
-/**
- * Represents a single dependency in a project.
- */
-export type Dependency = {
-    /**
-     * The package URL (PURL) that uniquely identifies the dependency.
-     * @see {@link https://github.com/package-url/purl-spec} for PURL specification.
-     */
-    package_url: string
-    /** Metadata about the dependency. */
-    metadata: {
-        /** The name of the dependency. */
-        name: string
-        /** The version of the dependency, if available. */
-        version?: string
-    }
-    /**
-     * Indicates whether the dependency is directly required by the project or is a subdependency.
-     */
-    relationship: 'direct' | 'indirect'
-    /**
-     * Indicates whether the dependency is used in development or at runtime.
-     * This field is optional and may not be present for all dependencies.
-     */
-    scope?: 'development' | 'runtime'
-}
+// todo this doesnt work at least for npm, there is no pattern that matches github ids to npm package ids
+// Function to convert GitHub PURL to primary PURL based on repository languages
+export async function githubPURLtoPrimaryPURL(repo: PackageURL): Promise<PackageURL | null> {
+    const languages = await getGithubRepoLanguages(repo)
+    // @ts-expect-error
+    const primaryLanguage = Object.keys(languages).sort((a, b) => languages[b] - languages[a])[0]
 
-/**
- * Represents a change in dependencies between two commits.
- */
-export type DependencyDiff = {
-    /** The type of change that occurred to the dependency. */
-    change_type: 'added' | 'removed' | 'changed'
-    /** The manifest file where the dependency is declared. */
-    manifest: string
-    /** The ecosystem of the dependency (e.g., npm, pip, maven). */
-    ecosystem: string
-    /** The name of the dependency. */
-    name: string
-    /** The version of the dependency, if available. */
-    version?: string
-    /**
-     * The package URL (PURL) that uniquely identifies the dependency.
-     * @see {@link https://github.com/package-url/purl-spec} for PURL specification.
-     */
-    package_url: string
-    /** The license of the dependency, if available. */
-    license?: string
-    /** The URL of the source repository for the dependency, if available. */
-    source_repository_url?: string
-}
-
-/**
- * Represents the response from the GitHub API for a dependency graph diff request.
- */
-export type DependencyGraphDiffResponse = {
-    /** An array of dependency differences between the two compared commits. */
-    differences: DependencyDiff[]
-}
-
-/**
- * Retrieves the diff of dependencies between two commits.
- *
- * This function makes an API call to GitHub to fetch the dependency changes between two specified commits.
- * It's useful for understanding how dependencies have changed in a project over time, including additions,
- * removals, and version changes.
- *
- * @param repo - The GitHub repository object containing the URL for the API call.
- * @param basehead - A string in the format "base...head" where base and head are commit SHAs or refs to compare.
- * @returns A Promise that resolves to a DependencyGraphDiffResponse containing the differences in dependencies.
- *
- * @example
- * const repo = { url: 'https://api.github.com/repos/owner/repo' };
- * const diff = await getDependencyDiff(repo, 'main...feature-branch');
- * diff.differences.forEach(change => {
- *   console.log(`${change.change_type}: ${change.name} ${change.version || ''}`);
- * });
- *
- * @see For more information on dependency review, visit:
- * @see {@link https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/about-dependency-review} - About dependency review
- * @see {@link https://docs.github.com/en/rest/dependency-graph/dependency-review} - Dependency review API documentation
- */
-export async function getDependencyDiff(repo: GhRepoBase, basehead: string): Promise<DependencyGraphDiffResponse> {
-    return fetchGithubAPI<DependencyGraphDiffResponse>(`${repo.url}/dependency-graph/compare/${basehead}`)
-}
-
-/**
- * Retrieves the SBOM (Software Bill of Materials) for a repository.
- *
- * This function makes an API call to GitHub to fetch the SBOM data for the specified repository.
- * The SBOM provides a comprehensive list of all software components and dependencies used in the project.
- *
- * @param repo - The GitHub repository object containing the URL for the API call.
- * @returns A Promise that resolves to an SBOMResponse containing the SBOM data.
- *
- * @example
- * const repo = { url: 'https://api.github.com/repos/owner/repo' };
- * const sbomData = await getSBOM(repo);
- * console.log(sbomData.sbom.name); // Logs the name of the SBOM
- *
- * @see For more information on SBOMs, visit:
- * @see {@link https://www.cisa.gov/sbom} - CISA SBOM Resources
- * @see {@link https://cyclonedx.org/} - CycloneDX SBOM Standard
- * @see {@link https://spdx.dev/} - SPDX SBOM Standard
- */
-export async function getSBOM(repo: GhRepoBase) {
-    type SBOMResponse = {
-        sbom: SBOM
+    if (!primaryLanguage) {
+        return null
     }
 
-    return fetchGithubAPI<SBOMResponse>(`${repo.url}/dependency-graph/sbom`)
+    switch (primaryLanguage) {
+        case 'JavaScript':
+        case 'TypeScript':
+            return new PackageURL('npm', repo.namespace, repo.name, undefined, undefined, undefined)
+        case 'Python':
+            return new PackageURL('pypi', repo.namespace, repo.name, undefined, undefined, undefined)
+        case 'Java':
+        case 'Kotlin':
+            return new PackageURL('maven', repo.namespace, repo.name, undefined, undefined, undefined)
+        case 'C#':
+            return new PackageURL('nuget', repo.namespace, repo.name, undefined, undefined, undefined)
+        case 'Ruby':
+            return new PackageURL('rubygems', repo.namespace, repo.name, undefined, undefined, undefined)
+        case 'Go':
+            return new PackageURL('golang', repo.namespace, repo.name, undefined, undefined, undefined)
+        case 'PHP':
+            return new PackageURL('packagist', repo.namespace, repo.name, undefined, undefined, undefined)
+        default:
+            return null
+    }
 }

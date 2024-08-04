@@ -4,7 +4,7 @@ import { connectToDatabase, closeConnection } from 'domain/utils/mongoUtil'
 import { RepoMetadataService } from 'domain/services/repoMetadataService'
 import { toGithubRepoId } from 'domain/utils/repoIdConverter'
 
-export type RouteArgs = { params: { repoId: string } }
+export type RouteArgs = { params: { slug: string } }
 
 export type BaseCtx = {
     userId: ObjectId
@@ -13,7 +13,7 @@ export type BaseCtx = {
 
 export type RepoCtx = {
     repoMetadataService: RepoMetadataService
-    repoId: string | null
+    slug: string | null
 } & BaseCtx
 
 export async function withRepoCtx<T>(
@@ -25,12 +25,12 @@ export async function withRepoCtx<T>(
     const service = await RepoMetadataService.init()
     const { userId, apiKey } = getAuth(req)
 
-    const repoId = params.repoId ? toGithubRepoId(params.repoId) : null
+    const slug = params.slug ? toGithubRepoId(params.slug) : null
     const context: RepoCtx = {
         userId,
         apiKey,
         repoMetadataService: service,
-        repoId,
+        slug,
     }
     return await handler(context)
 }

@@ -1,9 +1,9 @@
-import { RepoMetadata, RepoSource, AtomicType, Fork, RepoMetadataInput } from '../models/RepoMetadata'
+import { RepoMetadata, AtomicType } from '../models/RepoMetadata'
 import { getCollection } from '../utils/mongoUtil'
 import { Collection, ObjectId } from 'mongodb'
 
 export class RepoMetadataService {
-    private collection: Collection<RepoMetadata>
+    protected collection: Collection<RepoMetadata>
 
     constructor(collection: Collection<RepoMetadata>) {
         this.collection = collection
@@ -14,13 +14,17 @@ export class RepoMetadataService {
         return new RepoMetadataService(collection)
     }
 
-    async createRepoMetadata(metadata: RepoMetadataInput): Promise<RepoMetadata> {
+    async createRepoMetadata(metadata: Omit<RepoMetadata, '_id' | 'createdAt' | 'updatedAt'>): Promise<RepoMetadata> {
         const now = new Date()
-        metadata.createdAt = now
-        metadata.updatedAt = now
-
-        // @ts-expect-error metadata id stuff pls fix
-        const insertResult = await this.collection.insertOne(metadata)
+        const fullMetadata: RepoMetadata = {
+            ...metadata,
+            _id: new ObjectId(),
+            createdAt: now,
+            updatedAt: now,
+            source: metadata.source,
+            registry: metadata.registry ? metadata.registry : undefined,
+        }
+        const insertResult = await this.collection.insertOne(fullMetadata)
         const insertedDocument = await this.collection.findOne({ _id: insertResult.insertedId })
         if (!insertedDocument) {
             throw new Error('Failed to retrieve the newly created document.')
@@ -28,41 +32,56 @@ export class RepoMetadataService {
         return insertedDocument
     }
 
-    async updateRepoMetadata(metadata: Partial<RepoMetadata>): Promise<RepoMetadata> {
-        const { repoId } = metadata
-        metadata.updatedAt = new Date()
+    async updateRepoMetadata(
+        slug: string,
+        update: Partial<Omit<RepoMetadata, '_id' | 'slug' | 'createdAt' | 'updatedAt'>>,
+    ): Promise<RepoMetadata> {
+        const now = new Date()
+        if (update.source) {
+            update.source = update.source
+        }
+        if (update.registry) {
+            update.registry = update.registry
+        }
         const updateResult = await this.collection.findOneAndUpdate(
-            { repoId },
-            { $set: metadata },
+            { slug },
+            {
+                $set: { ...update, updatedAt: now },
+            },
             { returnDocument: 'after' },
         )
         if (!updateResult) {
-            throw new Error('No document found with the given repoId.')
+            throw new Error('No document found with the given slug.')
         }
         return updateResult
     }
 
-    async getRepoMetadata(repoId: string): Promise<RepoMetadata | null> {
-        return await this.collection.findOne({ repoId })
+    async getRepoMetadata(slug: string): Promise<RepoMetadata | null> {
+        return await this.collection.findOne({ slug })
     }
 
-    async deleteRepoMetadata(repoId: string): Promise<void> {
-        await this.collection.deleteOne({ repoId })
+    async deleteRepoMetadata(slug: string): Promise<void> {
+        await this.collection.deleteOne({ slug })
     }
 
     async queryRepoMetadata(options: {
-        source?: RepoSource
+        sourceType?: string
+        sourceNamespace?: string
         atomicType?: AtomicType
         tags?: string[]
+        language?: string
         dependency?: string
-        dependencyType?: 'production' | 'development'
-        sortField?: string
+        dependencyType?: string
+        sortField?: keyof RepoMetadata
         sortDirection?: 'asc' | 'desc'
-    }) {
+    }): Promise<RepoMetadata[]> {
         const query: any = {}
-        if (options.source) query.source = options.source
+
+        if (options.sourceType) query['source.type'] = options.sourceType
+        if (options.sourceNamespace) query['source.namespace'] = options.sourceNamespace
         if (options.atomicType) query.atomicType = options.atomicType
         if (options.tags && options.tags.length > 0) query.tags = { $all: options.tags }
+        if (options.language) query.language = options.language
         if (options.dependency) {
             query['dependencies.name'] = options.dependency
             if (options.dependencyType) {
@@ -78,43 +97,5 @@ export class RepoMetadataService {
         }
 
         return await cursor.toArray()
-    }
-
-    async addFork(repoId: string, fork: Fork): Promise<RepoMetadata> {
-        const now = new Date()
-        fork.createdAt = now
-        fork.updatedAt = now
-        const updateResult = await this.collection.findOneAndUpdate(
-            { repoId },
-            {
-                $push: { forks: fork },
-                $set: { updatedAt: now },
-            },
-            { returnDocument: 'after' },
-        )
-        if (!updateResult) {
-            throw new Error('No document found with the given repoId.')
-        }
-        return updateResult
-    }
-
-    async updateFork(repoId: string, forkId: ObjectId, update: Partial<Fork>): Promise<RepoMetadata> {
-        const now = new Date()
-        update.updatedAt = now
-        const updateResult = await this.collection.findOneAndUpdate(
-            { repoId, 'forks.userId': forkId },
-            {
-                $set: Object.entries(update).reduce((acc, [key, value]) => {
-                    acc[`forks.$.${key}`] = value
-                    return acc
-                }, {} as any),
-                updatedAt: now,
-            },
-            { returnDocument: 'after' },
-        )
-        if (!updateResult) {
-            throw new Error('No document or fork found with the given repoId and forkId.')
-        }
-        return updateResult
     }
 }

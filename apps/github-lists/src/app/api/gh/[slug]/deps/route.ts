@@ -1,24 +1,18 @@
-import {
-    GhAnalysys,
-    GhRepoBase,
-    getGhRepoBase,
-    getGithubFullTree,
-    getGithubRepo,
-    getGithubRepoContents,
-} from '@qolt/data-github'
+import { getGhPackageURL, getGithubFullTree, getGithubRepo, getGithubRepoContents, getSBOM } from '@qolt/data-github'
 import { convertSBOMToDependencies, getDependencyExtractor } from 'domain/utils/depExtractors'
 import { IDependency } from 'domain/utils/depExtractors/IDependencyExtractor'
 import { DirTree, gitTreeToDirectoryTree } from 'domain/utils/dirTreeUtils'
 import { toGithubRepoId } from 'domain/utils/repoIdConverter'
+import { PackageURL } from 'packageurl-js'
 
 async function extractDependenciesFromFiles(
-    repo: GhRepoBase,
+    repo: PackageURL,
     tree: DirTree,
     language: string | undefined,
     maxDepth: number = 100,
 ): Promise<IDependency[]> {
     if (!language) {
-        console.warn(`No language specified for repo ${repo.full_name}. Skipping file-based dependency extraction.`)
+        console.warn(`No language specified for repo ${repo}. Skipping file-based dependency extraction.`)
         return []
     }
 
@@ -28,12 +22,12 @@ async function extractDependenciesFromFiles(
 
     async function searchTree(node: DirTree, depth: number): Promise<void> {
         if (depth > maxDepth) {
-            console.warn(`Max depth reached for path ${node.path}. Stopping recursion.`)
+            console.warn(`Max depth reached for "${node.path}-${node.name}". Stopping recursion.`)
             return
         }
 
         if (processedPaths.has(node.path)) {
-            console.warn(`Circular reference detected for path ${node.path}. Skipping.`)
+            console.warn(`Circular reference detected for "${node.path}-${node.name}". Skipping.`)
             return
         }
 
@@ -62,18 +56,17 @@ async function extractDependenciesFromFiles(
     return fileDependencies
 }
 
-export async function GET(_: Request, { params }: { params: { repoId: string } }) {
+export async function GET(_: Request, { params }: { params: { slug: string } }) {
     try {
-        const repo = getGhRepoBase(toGithubRepoId(params.repoId))
+        const repo = getGhPackageURL(toGithubRepoId(params.slug))
         const repoDetails = await getGithubRepo(repo)
 
         const fullTree = await getGithubFullTree(repo)
         const tree = gitTreeToDirectoryTree(fullTree)
         const parsedTreeDeps = await extractDependenciesFromFiles(repo, tree, repoDetails.language)
 
-        const sbomResponse = await GhAnalysys.getSBOM(repo)
+        const sbomResponse = await getSBOM(repo)
         const sbomDeps: IDependency[] = convertSBOMToDependencies(sbomResponse.sbom)
-
 
         const dependencyData = {
             fileDependencies: {

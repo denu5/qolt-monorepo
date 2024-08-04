@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { handleError, RouteArgs, withRepoCtx } from 'domain/utils/withRepoCtx'
 import { importRepo } from 'domain/services/importHelpers'
 import { getOwnGithubList } from 'domain/utils/githubListsUtils'
+import { getGhPackageURL } from '@qolt/data-github'
 
 type ListRouteArgs = RouteArgs & { params: { ghListName: string } }
 
@@ -10,11 +11,12 @@ export async function GET(req: NextRequest, { params }: ListRouteArgs) {
         try {
             const repoIds = await getOwnGithubList(params.ghListName)
             const results = await Promise.all(
-                repoIds.map(async (repoId) => {
+                repoIds.map(async (slug) => {
                     try {
-                        return await importRepo(repoId, ctx.repoMetadataService)
+                        const ghPURL = getGhPackageURL(slug)
+                        return await importRepo(ghPURL, ctx.repoMetadataService)
                     } catch (error) {
-                        return { repoId, action: 'error', error: String(error) }
+                        return { slug, action: 'error', error: String(error) }
                     }
                 }),
             )
