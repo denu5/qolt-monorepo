@@ -1,8 +1,8 @@
-import { manifest as purlPageManifest } from './(content)/purl/[slug]/manifest'
-import { manifest as articePageManifest } from './(content)/a/[...slug]/manifest'
-import { manifest as defaultPageManifest } from './(content)/p/[...slug]/manifest'
-import { manifest as githubListsPageManifest } from './(content)/g/manifest'
-import { manifest as githubListsDetailPageManifest } from './(content)/g/lists/[docListName]/manifest'
+import { manifest as purlPageManifest } from './(pages)/purl/[slug]/manifest'
+import { manifest as articePageManifest } from './(pages)/a/[...slug]/manifest'
+import { manifest as defaultPageManifest } from './(pages)/p/[...slug]/manifest'
+import { manifest as githubListsPageManifest } from './(pages)/g/manifest'
+import { manifest as githubListsDetailPageManifest } from './(pages)/g/lists/[docListName]/manifest'
 
 export type PageProps<T extends object> = {
     params: T

@@ -125,9 +125,8 @@ github-lists
 └── src
     └── app
         ├── _components
-        ├── (content)
+        ├── (pages)
         │   ├── g
-        │   │   ├── api
         │   │   └── list [docListName]
         │   │       ├── page.tsx
         │   ├── layout.tsx

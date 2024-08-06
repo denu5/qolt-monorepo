@@ -50,8 +50,6 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
                         </AppRoot.LeftRail>
 
                         <AppRoot.Children>
-                            {' '}
-                            <Navigation />
                             {children}
                         </AppRoot.Children>
                     </AppRoot.Layout>
