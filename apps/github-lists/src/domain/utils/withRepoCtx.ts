@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ObjectId } from 'mongodb'
-import { connectToDatabase, closeConnection } from 'domain/utils/mongoUtil'
+import { connectToDatabase } from 'domain/utils/mongoUtil'
 import { RepoMetadataService } from 'domain/services/repoMetadataService'
-import { toGithubRepoId } from 'domain/utils/repoIdConverter'
+import { createPURLFromSlug } from 'domain/utils/repoIdConverter'
+import { PackageURL } from 'packageurl-js'
 
 export type RouteArgs = { params: { slug: string } }
 
@@ -14,6 +15,7 @@ export type BaseCtx = {
 export type RepoCtx = {
     repoMetadataService: RepoMetadataService
     slug: string | null
+    purl: PackageURL | null
 } & BaseCtx
 
 export async function withRepoCtx<T>(
@@ -25,12 +27,12 @@ export async function withRepoCtx<T>(
     const service = await RepoMetadataService.init()
     const { userId, apiKey } = getAuth(req)
 
-    const slug = params.slug ? toGithubRepoId(params.slug) : null
     const context: RepoCtx = {
         userId,
         apiKey,
         repoMetadataService: service,
-        slug,
+        slug: params.slug,
+        purl: createPURLFromSlug(params.slug),
     }
     return await handler(context)
 }

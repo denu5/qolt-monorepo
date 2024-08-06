@@ -23,7 +23,7 @@ export type Fork = {
 export type RepoMetadata = {
     _id: ObjectId
     slug: string
-    source: PackageURL
+    source?: PackageURL
     registry?: PackageURL
 
     atomicType: AtomicType

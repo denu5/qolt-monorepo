@@ -1,18 +1,16 @@
 import { Link, Card, CardContent, CardOverflow, Divider, Typography } from '@mui/joy'
 import { DateTimeAgo } from '@qolt/app-components/_client'
-import { getGithubRepo, getGhPackageURL, GhAnalysys } from '@qolt/data-github'
+import { getGithubRepo } from '@qolt/data-github'
 import { PrimaryRegistryLocator } from 'domain/utils/PackageLocator'
+import { PackageURL } from 'packageurl-js'
 
-export async function GhRepoCard$({ id }: { id: string }) {
+export async function GhRepoCard$({ purl }: { purl: PackageURL }) {
     try {
-        const ghPURL = getGhPackageURL(id)
-
         // todo remove later
-        const primaryPURL = await GhAnalysys.githubPURLtoPrimaryPURL(ghPURL)
-        const p = new PrimaryRegistryLocator(primaryPURL!)
+        const p = new PrimaryRegistryLocator(purl)
         console.log(p.getPackageDp())
 
-        const repo = await getGithubRepo(getGhPackageURL(id))
+        const repo = await getGithubRepo(purl)
         return (
             <Card sx={{ width: '100%' }}>
                 <CardContent>

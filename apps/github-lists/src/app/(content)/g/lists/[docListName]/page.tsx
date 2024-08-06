@@ -8,6 +8,7 @@ import { allGithubLists } from 'contentlayer/generated'
 import { GhListRepoCount$ } from 'domain/components/GhListRepoCount'
 import { GhRepoCard$ } from 'domain/components/GhRepoCard'
 import { getOwnGithubList, getOwnGithubListsHtmlUrl } from 'domain/utils/githubListsUtils'
+import { getGhPackageURL } from '@qolt/data-github'
 
 type PageProps = { params: { docListName: string } }
 
@@ -52,7 +53,7 @@ export default async function GhListPage({ params: { docListName } }: PageProps)
                 {items.toReversed().map((item) => (
                     <ListItem key={item} sx={{ maxWidth: 720, width: '100%', p: 0 }}>
                         <Suspense>
-                            <GhRepoCard$ id={item} />
+                            <GhRepoCard$ purl={getGhPackageURL(item)} />
                         </Suspense>
                     </ListItem>
                 ))}
