@@ -2,10 +2,11 @@ import { List, ListItem, Stack, Chip, Typography, Card, CardContent } from '@mui
 import { DrawerLayout as DLayout } from '@qolt/app-components'
 import { notFound } from 'next/navigation'
 
-import { GhRepoCard$ } from 'domain/components/GhRepoCard'
 import { Suspense } from 'react'
 import { RepoMetadataService } from 'domain/services/repoMetadataService'
 import { createPURLFromSlug } from 'domain/utils/repoIdConverter'
+import { NpmPURLCard$ } from 'domain/components/NpmPURLCard'
+import { GhPURLCard$ } from 'domain/components/GhPURLCard'
 
 type PageProps = {
     params: {
@@ -15,12 +16,13 @@ type PageProps = {
 
 export default async function RepoPage({ params }: PageProps) {
     try {
+        const slug = decodeURIComponent(params.slug)
+        const purl = createPURLFromSlug(slug)
+
         const repoMetadataService = await RepoMetadataService.init()
-        const repo = await repoMetadataService.getRepoMetadata(decodeURIComponent(params.slug))
+        const repo = await repoMetadataService.getRepoMetadata(slug)
 
         if (!repo?.source) return notFound()
-
-        const purl = createPURLFromSlug(repo.slug)
 
         return (
             <DLayout.Children>
@@ -37,7 +39,12 @@ export default async function RepoPage({ params }: PageProps) {
                 >
                     <ListItem>
                         <Suspense fallback={<div>Loading repository card...</div>}>
-                            <GhRepoCard$ purl={purl!} />
+                            <GhPURLCard$ purl={purl!} />
+                        </Suspense>
+                    </ListItem>
+                    <ListItem>
+                        <Suspense fallback={<div>Loading repository card...</div>}>
+                            {repo.registry && <NpmPURLCard$ purl={repo.registry} githubPurl={purl} />}
                         </Suspense>
                     </ListItem>
                     <ListItem>

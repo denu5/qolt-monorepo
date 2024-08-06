@@ -4,7 +4,7 @@ import { getGithubRepo } from '@qolt/data-github'
 import { PrimaryRegistryLocator } from 'domain/utils/PackageLocator'
 import { PackageURL } from 'packageurl-js'
 
-export async function GhRepoCard$({ purl }: { purl: PackageURL }) {
+export async function GhPURLCard$({ purl }: { purl: PackageURL }) {
     try {
         // todo remove later
         const p = new PrimaryRegistryLocator(purl)
