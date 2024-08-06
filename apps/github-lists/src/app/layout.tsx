@@ -62,7 +62,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
 }
 
 const sharedTitle = 'denu5'
-const sharedDescription = 'playground website'
+const sharedDescription = ''
 export const sharedImage = {
     width: 1200,
     height: 630,
