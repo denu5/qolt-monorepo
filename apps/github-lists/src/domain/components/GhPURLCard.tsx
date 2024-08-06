@@ -1,8 +1,15 @@
 import { Link, Card, CardContent, CardOverflow, Divider, Typography } from '@mui/joy'
 import { DateTimeAgo } from '@qolt/app-components/_client'
 import { getGithubRepo } from '@qolt/data-github'
+import { importRepoFromPURL } from 'domain/services/importHelpers'
+import { RepoMetadataService } from 'domain/services/repoMetadataService'
 import { PrimaryRegistryLocator } from 'domain/utils/PackageLocator'
 import { PackageURL } from 'packageurl-js'
+
+const lazyImportRepo = async (purl: PackageURL) => {
+    const service = await RepoMetadataService.init()
+    await importRepoFromPURL(purl, service)
+}
 
 export async function GhPURLCard$({ purl }: { purl: PackageURL }) {
     try {
@@ -11,6 +18,9 @@ export async function GhPURLCard$({ purl }: { purl: PackageURL }) {
         console.log(p.getPackageDp())
 
         const repo = await getGithubRepo(purl)
+
+        lazyImportRepo(purl)
+
         return (
             <Card sx={{ width: '100%' }}>
                 <CardContent>

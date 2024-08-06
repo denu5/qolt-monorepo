@@ -6,6 +6,8 @@ import { Metadata, Viewport } from 'next'
 import { Fira_Code as FontMono, Inter as FontSans } from 'next/font/google'
 
 import * as Nav from './_components/NavItems'
+import Link from 'next/link'
+import { routes } from './rootManifest'
 
 const myFontSans = FontSans({
     weight: ['100', '300', '400', '500', '700'],
@@ -23,6 +25,19 @@ const myFontMono = FontMono({
 
 const variableFontClassNames = `${myFontSans.variable} ${myFontMono.variable}`
 
+function Navigation() {
+    return (
+        <nav>
+            <Link href={routes.home.buildUrl()}>Home</Link>
+            <Link href={routes.purl.buildUrl({ slug: 'github:lukemorales:query-key-factory' })}>query-key-factory</Link>
+            <Link href={routes.article.buildUrl({ slug: ['digest', 'future-of-ai-perplexity'] })}>
+                Next.js Routing Article
+            </Link>
+            <Link href={routes.page.buildUrl({ slug: ['legal'] })}>Legal</Link>
+        </nav>
+    )
+}
+
 export default function RootLayout({ children }: React.PropsWithChildren) {
     return (
         <html lang="en" className={variableFontClassNames}>
@@ -33,7 +48,12 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
                             <Nav.Primary />
                             <Nav.Secondary />
                         </AppRoot.LeftRail>
-                        <AppRoot.Children>{children}</AppRoot.Children>
+
+                        <AppRoot.Children>
+                            {' '}
+                            <Navigation />
+                            {children}
+                        </AppRoot.Children>
                     </AppRoot.Layout>
                     <Analytics />
                     <SpeedInsights />

@@ -23,7 +23,6 @@ export async function withRepoCtx<T>(
     { params }: RouteArgs,
     handler: (context: RepoCtx) => Promise<T>,
 ): Promise<T> {
-    await connectToDatabase()
     const service = await RepoMetadataService.init()
     const { userId, apiKey } = getAuth(req)
 

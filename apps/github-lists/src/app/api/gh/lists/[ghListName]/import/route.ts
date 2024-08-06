@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { handleError, RouteArgs, withRepoCtx } from 'domain/utils/withRepoCtx'
-import { importRepo } from 'domain/services/importHelpers'
+import { importRepoFromPURL } from 'domain/services/importHelpers'
 import { getOwnGithubList } from 'domain/utils/githubListsUtils'
 import { getGhPackageURL } from '@qolt/data-github'
 
@@ -14,7 +14,7 @@ export async function GET(req: NextRequest, { params }: ListRouteArgs) {
                 repoIds.map(async (slug) => {
                     try {
                         const ghPURL = getGhPackageURL(slug)
-                        return await importRepo(ghPURL, ctx.repoMetadataService)
+                        return await importRepoFromPURL(ghPURL, ctx.repoMetadataService)
                     } catch (error) {
                         return { slug, action: 'error', error: String(error) }
                     }

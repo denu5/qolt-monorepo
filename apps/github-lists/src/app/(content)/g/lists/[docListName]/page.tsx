@@ -9,14 +9,14 @@ import { GhListRepoCount$ } from 'domain/components/GhListRepoCount'
 import { getOwnGithubList, getOwnGithubListsHtmlUrl } from 'domain/utils/githubListsUtils'
 import { getGhPackageURL } from '@qolt/data-github'
 import { GhPURLCard$ } from 'domain/components/GhPURLCard'
+import { PageProps } from 'app/rootManifest'
+import { GhListParams } from './manifest'
 
-type PageProps = { params: { docListName: string } }
-
-export function generateMetadata({ params: { docListName } }: PageProps) {
+export function generateMetadata({ params: { docListName } }: PageProps<GhListParams>) {
     return getContentMetaData(getDocBySlug(allGithubLists, docListName))
 }
 
-export default async function GhListPage({ params: { docListName } }: PageProps) {
+export default async function GhListPage({ params: { docListName } }: PageProps<GhListParams>) {
     const doc = getDocBySlug(allGithubLists, docListName)
     const items = await getOwnGithubList(doc.ghListName)
 

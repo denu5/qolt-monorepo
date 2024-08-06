@@ -3,14 +3,10 @@ import { Mdx } from '@qolt/app-components'
 import { getContentMetaData, getDocBySlug } from '@qolt/app-contentlayer'
 import { allArticles } from 'contentlayer/generated'
 import { DirTreeRenderer, InputType, RenderMode } from 'domain/components/DirTreeRenderer'
+import { ArticleParams } from './manifest'
+import { PageProps } from 'app/rootManifest'
 
-type PageProps = {
-    params: {
-        slug: string[]
-    }
-}
-
-export function generateMetadata({ params }: PageProps) {
+export function generateMetadata({ params }: PageProps<ArticleParams>) {
     return getContentMetaData(getDocBySlug(allArticles, params.slug.join('/')))
 }
 
@@ -20,7 +16,7 @@ const defaultComponents = {
     ),
 }
 
-export default function Page({ params }: PageProps) {
+export default function Page({ params }: PageProps<ArticleParams>) {
     const doc = getDocBySlug(allArticles, params.slug.join('/'))
 
     const { title, desc, body } = doc

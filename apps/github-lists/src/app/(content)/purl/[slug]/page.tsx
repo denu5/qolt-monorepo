@@ -7,14 +7,10 @@ import { RepoMetadataService } from 'domain/services/repoMetadataService'
 import { createPURLFromSlug } from 'domain/utils/repoIdConverter'
 import { NpmPURLCard$ } from 'domain/components/NpmPURLCard'
 import { GhPURLCard$ } from 'domain/components/GhPURLCard'
+import { PageProps } from 'app/rootManifest'
+import { RepoParams } from './manifest'
 
-type PageProps = {
-    params: {
-        slug: string
-    }
-}
-
-export default async function RepoPage({ params }: PageProps) {
+export default async function Page({ params }: PageProps<RepoParams>) {
     try {
         const slug = decodeURIComponent(params.slug)
         const purl = createPURLFromSlug(slug)

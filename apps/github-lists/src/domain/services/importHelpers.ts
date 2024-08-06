@@ -4,9 +4,9 @@ import { gitTreeToDirectoryTree } from 'domain/utils/dirTreeUtils'
 import { RepoMetadataService } from './repoMetadataService'
 import { PackageURL } from 'packageurl-js'
 
-const getPURLSlug = (purl: PackageURL) => [purl.type, purl.namespace, purl.name].join(':')
+export async function importRepoFromPURL(ghPURL: PackageURL, repoMetadataService: RepoMetadataService) {
+    const getPURLSlug = (purl: PackageURL) => [purl.type, purl.namespace, purl.name].join(':')
 
-export async function importRepo(ghPURL: PackageURL, repoMetadataService: RepoMetadataService) {
     const repoIdSlug = getPURLSlug(ghPURL)
     let metadata = await repoMetadataService.getRepoMetadata(repoIdSlug)
     const [githubData, languages] = await Promise.all([getGithubRepo(ghPURL), getGithubRepoLanguages(ghPURL)])
